@@ -73,6 +73,16 @@ main :: proc() {
 	fmt.println("m8")
 	printMatrix(m8)
 
+	m9 := createMatrix(2, 4)
+	fillMatrix(m9, 1)
+	randomizeMatrix(m9, 16)
+	fmt.println("m9")
+	printMatrix(m9)
+
+	m10 := apply(sigmoid, m9)
+	fmt.println("m10")
+	printMatrix(m10)
+
 	// matrixFill(m, 1)
 	// m := matrix[4, 4]f64{
 	// 	1, 2, 3, 4, 

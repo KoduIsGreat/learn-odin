@@ -103,6 +103,10 @@ uniform_dist :: proc(low, high: f64) -> f64 {
 	return low + (high - low) * rand.float64()
 }
 
+sigmoid :: proc(x: f64) -> f64 {
+	return 1.0 / (1.0 + math.exp_f64(-1 * x))
+}
+
 randomizeMatrix :: proc(m: Matrix, n: f64) {
 	min := -1 / math.sqrt_f64(n)
 	max := 1 / math.sqrt_f64(n)
@@ -192,7 +196,16 @@ addScalarMatrix :: proc(m: Matrix, sf: f64) -> Matrix {
 	}
 	return cm1
 }
+apply :: proc(fn: proc(_: f64) -> f64, m: Matrix) -> Matrix {
+	cm1 := copyMatrix(m)
 
+	for i := 0; i < m.rows; i = i + 1 {
+		for j := 0; j < m.cols; j = j + 1 {
+			cm1.data[i * m.cols + j] = fn(m.data[i * m.cols + j])
+		}
+	}
+	return cm1
+}
 transpose :: proc(m: Matrix) -> Matrix {
 	tm := createMatrix(m.cols, m.rows)
 
