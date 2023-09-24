@@ -36,9 +36,10 @@ saveNN :: proc(nn: NeuralNetwork, filename: string) {
 	os.write_entire_file(filename, buf.buf[:])
 }
 
+
 main :: proc() {
-	nn := newNeuralnet(4, 3, 2, .1)
-	saveNN(nn, "./data/test")
+	// nn := newNeuralnet(4, 3, 2, .1)
+	// saveNN(nn, "./data/test")
 	// fillMatrix(nn.output_weights, 1.0)
 	// saveMatrix(nn.output_weights, "output_weights.txt")
 	// m := loadMatrix("./output_weights.txt")
@@ -49,5 +50,7 @@ main :: proc() {
 	// imgs := csv_to_imgs("./mnist_train.csv", 1)
 	// fmt.printf("label: %d\n", imgs[0].label)
 	// printMatrix(imgs[0].data)
+
+	matrix_example()
 
 }

@@ -129,6 +129,32 @@ addMatrix :: proc(m1, m2: Matrix) -> Matrix {
 }
 
 
+sub :: proc(m1, m2: Matrix, idx: int) -> f64 {
+	return m1.data[idx] - m2.data[idx]
+}
+
+add :: proc(m1, m2: Matrix, idx: int) -> f64 {
+	return m1.data[idx] + m2.data[idx]
+}
+
+mul :: proc(m1, m2: Matrix, idx: int) -> f64 {
+	return m1.data[idx] * m2.data[idx]
+}
+
+opMatrix :: proc(
+	m1, m2: Matrix,
+	op: proc(_, _: Matrix, _: int) -> f64,
+) -> Matrix {
+	checkDims(m1, m2)
+	m := createMatrix(m1.rows, m1.cols)
+	for i := 0; i < m1.rows; i = i + 1 {
+		for j := 0; j < m1.cols; j = j + 1 {
+			m.data[i * m1.cols + j] = op(m1, m2, i * m1.cols + j)
+		}
+	}
+	return m
+}
+
 subMatrix :: proc(m1, m2: Matrix) -> Matrix {
 	checkDims(m1, m2)
 	m := createMatrix(m1.rows, m1.cols)
@@ -293,4 +319,8 @@ matrix_example :: proc() {
 	m10 := apply(sigmoid, m9)
 	fmt.println("m10")
 	printMatrix(m10)
+
+	m11 := opMatrix(m9, m10, sub)
+	fmt.println("m11")
+	printMatrix(m11)
 }
