@@ -50,22 +50,21 @@ copyMatrix :: proc(m: Matrix) -> Matrix {
 	return copy
 }
 
-saveMatrix :: proc(m: Matrix, filename: string) {
-	buf: bytes.Buffer
-	bytes.buffer_write_string(&buf, fmt.aprintf("%d %d\n", m.rows, m.cols))
+saveMatrix :: proc(m: Matrix, buf: ^bytes.Buffer) {
+	bytes.buffer_write_string(buf, fmt.aprintf("%d %d\n", m.rows, m.cols))
 	for i := 0; i < m.rows; i = i + 1 {
 		for j := 0; j < m.cols; j = j + 1 {
 			bytes.buffer_write_string(
-				&buf,
+				buf,
 				fmt.aprintf("%f", m.data[i * m.cols + j]),
 			)
 			if j + 1 < m.cols {
-				bytes.buffer_write_string(&buf, " ")
+				bytes.buffer_write_string(buf, " ")
 			}
 		}
-		bytes.buffer_write_string(&buf, "\n")
+		bytes.buffer_write_string(buf, "\n")
 	}
-	os.write_entire_file(filename, buf.buf[:])
+	// os.write_entire_file(filename, buf.buf[:])
 }
 
 loadMatrix :: proc(filepath: string) -> Matrix {
@@ -196,6 +195,30 @@ addScalarMatrix :: proc(m: Matrix, sf: f64) -> Matrix {
 	}
 	return cm1
 }
+
+sigmoidPrime :: proc(m: Matrix) -> Matrix {
+	ones := createMatrix(m.rows, m.cols)
+	fillMatrix(ones, 1.0)
+	return mulMatrix(m, subMatrix(ones, m))
+}
+
+softMax :: proc(m: Matrix) -> Matrix {
+	total := 0.0
+	for i := 0; i < m.rows; i = i + 1 {
+		for j := 0; j < m.cols; j = j + 1 {
+			total = total + math.exp_f64(m.data[i * m.cols + j])
+		}
+	}
+	mat := createMatrix(m.rows, m.cols)
+	for i := 0; i < m.rows; i = i + 1 {
+		for j := 0; j < m.cols; j = j + 1 {
+			mat.data[i * m.cols + j] =
+				math.exp_f64(m.data[i * m.cols + j]) / total
+		}
+	}
+	return mat
+}
+
 apply :: proc(fn: proc(_: f64) -> f64, m: Matrix) -> Matrix {
 	cm1 := copyMatrix(m)
 
@@ -215,4 +238,59 @@ transpose :: proc(m: Matrix) -> Matrix {
 		}
 	}
 	return tm
+}
+
+
+matrix_example :: proc() {
+
+
+	m1 := createMatrix(3, 3)
+	fillMatrix(m1, 1.0)
+	randomizeMatrix(m1, 16)
+	fmt.println("m1")
+	printMatrix(m1)
+	m2 := createMatrix(3, 3)
+	fillMatrix(m1, 1.0)
+	randomizeMatrix(m2, 16)
+	fmt.println("m2")
+	printMatrix(m2)
+	m3 := addMatrix(m1, m2)
+	fmt.println("m3")
+	printMatrix(m3)
+
+
+	m4 := createMatrix(4, 2)
+	fillMatrix(m4, 1)
+	randomizeMatrix(m4, 16)
+	fmt.println("m4")
+	printMatrix(m4)
+	m5 := createMatrix(2, 4)
+	fillMatrix(m5, 1)
+	randomizeMatrix(m5, 16)
+	fmt.println("m5")
+	printMatrix(m5)
+	m6 := dotMatrix(m4, m5)
+
+	fmt.println("m6")
+	printMatrix(m6)
+
+	m7 := createMatrix(2, 4)
+	fillMatrix(m7, 1)
+	randomizeMatrix(m7, 16)
+	fmt.println("m7")
+	printMatrix(m7)
+
+	m8 := transpose(m7)
+	fmt.println("m8")
+	printMatrix(m8)
+
+	m9 := createMatrix(2, 4)
+	fillMatrix(m9, 1)
+	randomizeMatrix(m9, 16)
+	fmt.println("m9")
+	printMatrix(m9)
+
+	m10 := apply(sigmoid, m9)
+	fmt.println("m10")
+	printMatrix(m10)
 }
